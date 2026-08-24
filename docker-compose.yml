@@ -1,0 +1,42 @@
+# SAKSHYA - PostgreSQL + pgvector deployment target.
+#
+# IMPORTANT / HONESTY NOTE:
+#   This Compose file describes the intended production stack. It has NOT been
+#   executed, because the prototype development machine has no Docker installed
+#   (see docs/ARCHITECTURE.md). Nothing in this file should be reported as
+#   verified until it has actually been brought up.
+#
+#   The prototype runs locally without Docker on SQLite. See README.md.
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: sakshya
+      POSTGRES_PASSWORD: sakshya
+      POSTGRES_DB: sakshya
+    volumes:
+      - sakshya_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sakshya -d sakshya"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SAKSHYA_ENVIRONMENT: production
+      # Must be supplied at deploy time; the app refuses to boot without it
+      # outside development.
+      SAKSHYA_SECRET_KEY: ${SAKSHYA_SECRET_KEY:?set SAKSHYA_SECRET_KEY before deploying}
+      SAKSHYA_DATABASE_URL: postgresql+psycopg://sakshya:sakshya@db:5432/sakshya
+      SAKSHYA_CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+
+volumes:
+  sakshya_pgdata:

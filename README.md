@@ -78,13 +78,44 @@ executed and verified, never merely written.
 |---|---|---|
 | 0 | Repository & environment audit | ✅ Verified |
 | 1 | Foundation — auth, RBAC, schema, health, demo users | ✅ Verified |
-| 2 | Competency system, evidence ledger, deterministic engine | Not started |
+| 2 | Competency system, evidence ledger, deterministic engine | ✅ Verified |
 | 3 | Document upload, RAG, grounded MCQ, SME review | Not started |
 | 4 | Statistical simulation lab | Not started |
 | 5 | Gap detection & explainable recommender | Not started |
 | 6 | Dashboards, learning catalogue, iGOT boundary | Not started |
 | 7 | End-to-end demo wiring | Not started |
 | 8 | Testing & polish | Not started |
+
+## How competency is determined
+
+Mastery is the recency-weighted, type-weighted mean of **accepted** evidence:
+
+```
+mastery = Σ(type_weight × recency × score) / Σ(type_weight × recency)
+```
+
+Evidence type weights encode the project's core claim — attendance is not
+capability:
+
+| Evidence type | Weight |
+|---|---|
+| Simulation | ×1.5 |
+| Practical submission (SME reviewed) | ×1.4 |
+| Expert verified | ×1.2 |
+| Assessment | ×1.0 |
+| Peer review | ×0.8 |
+| **Course completion** | **×0.4** |
+
+Confidence is calculated **separately** from mastery, from four components —
+evidence volume, type diversity, recency, and agreement between scores. Below
+1.5 effective evidence weight or 0.35 confidence, SAKSHYA reports
+`INSUFFICIENT_EVIDENCE` and asserts **no level at all**.
+
+The seeded demo makes this concrete: the learner scored **95% on a
+non-response course**, and SAKSHYA still refuses to claim the competency —
+one weak evidence type carries only 0.37 effective weight. Every figure is
+reproducible by hand from `GET /api/v1/competency-method`, which publishes the
+constants used.
 
 ## Architecture
 

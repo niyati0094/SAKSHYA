@@ -1,7 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { CompetencyDetailPage } from './pages/CompetencyDetailPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage';
+import { LearnerDashboard } from './pages/LearnerDashboard';
 import { LoginPage } from './pages/LoginPage';
 import { useAuth } from './auth/AuthContext';
 import { dashboardPathFor } from './routes';
@@ -30,7 +33,27 @@ export function App() {
         element={
           <ProtectedRoute allowedRoles={['learner']}>
             <AppShell>
-              <DashboardPage role="learner" />
+              <LearnerDashboard />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/competency/:competencyId"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <CompetencyDetailPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/evidence"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <EvidenceLedgerPage />
             </AppShell>
           </ProtectedRoute>
         }

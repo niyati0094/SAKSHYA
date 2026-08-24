@@ -97,7 +97,16 @@ def run() -> None:
     with SessionLocal() as db:
         created, skipped = seed_users(db)
 
+        # Competency framework + demo learner evidence (Milestone 2).
+        from sqlalchemy import select
+
+        from app.db.seed_competency import seed_learner_evidence
+
+        learner = db.scalar(select(User).where(User.email == "learner@sakshya.dev"))
+        evidence_created = seed_learner_evidence(db, learner) if learner else 0
+
     print(f"[seed] users created={created} skipped(existing)={skipped}")
+    print(f"[seed] evidence records created={evidence_created}")
     print("[seed] development-only demo credentials:")
     for demo in DEMO_USERS:
         print(f"        {demo.role.value:<8} {demo.email}  /  {demo.password}")

@@ -64,6 +64,19 @@ def demo_password(db_session: Session) -> str:
     return DEMO_PASSWORD
 
 
+@pytest.fixture
+def seeded_learner(db_session: Session, demo_password: str) -> str:
+    """Seed users plus the competency framework and demo evidence."""
+    from sqlalchemy import select
+
+    from app.db.seed_competency import seed_learner_evidence
+    from app.models.user import User
+
+    learner = db_session.scalar(select(User).where(User.email == "learner@sakshya.dev"))
+    seed_learner_evidence(db_session, learner)
+    return demo_password
+
+
 def login(client: TestClient, email: str, password: str) -> str:
     response = client.post("/api/v1/auth/login", json={"email": email, "password": password})
     assert response.status_code == 200, response.text

@@ -1,0 +1,137 @@
+/* Simulation lab styling (Milestone 4). */
+
+.briefing p {
+  margin-top: 0.7rem;
+  max-width: 78ch;
+  line-height: 1.65;
+}
+
+.option-chosen {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.submit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 0;
+  background: var(--canvas);
+  border-top: 1px solid var(--line);
+  padding: 0.9rem 0;
+}
+
+.alert-success {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border-color: #a7f3d0;
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #a7f3d0;
+  font-size: 0.9rem;
+}
+
+.alert-success a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.alert-success code {
+  background: rgba(4, 120, 87, 0.1);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+/* --- outcomes --- */
+
+.outcome-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.outcome {
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.outcome-best {
+  border-left-color: var(--ok);
+  background: var(--ok-soft);
+}
+.outcome-partial {
+  border-left-color: var(--warn);
+  background: var(--warn-soft);
+}
+.outcome-weak {
+  border-left-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.outcome-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.outcome-credit {
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.outcome-rationale {
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.debrief {
+  margin-top: 0.9rem;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+
+.attempt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.attempt-row:last-child {
+  border-bottom: none;
+}
+
+.attempt-row a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 550;
+}
+.attempt-row a:hover {
+  text-decoration: underline;
+}

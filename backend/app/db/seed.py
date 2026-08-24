@@ -105,8 +105,18 @@ def run() -> None:
         learner = db.scalar(select(User).where(User.email == "learner@sakshya.dev"))
         evidence_created = seed_learner_evidence(db, learner) if learner else 0
 
+        # Sample learning material + generated questions (Milestone 3).
+        from app.db.seed_documents import seed_sample_document
+
+        sme = db.scalar(select(User).where(User.email == "sme@sakshya.dev"))
+        documents_created, questions_created = seed_sample_document(db, sme)
+
     print(f"[seed] users created={created} skipped(existing)={skipped}")
     print(f"[seed] evidence records created={evidence_created}")
+    print(
+        f"[seed] documents created={documents_created} "
+        f"questions generated={questions_created}"
+    )
     print("[seed] development-only demo credentials:")
     for demo in DEMO_USERS:
         print(f"        {demo.role.value:<8} {demo.email}  /  {demo.password}")

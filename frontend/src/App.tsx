@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage';
 import { LearnerDashboard } from './pages/LearnerDashboard';
 import { LoginPage } from './pages/LoginPage';
+import { SmeReviewPage } from './pages/SmeReviewPage';
 import { useAuth } from './auth/AuthContext';
 import { dashboardPathFor } from './routes';
 
@@ -60,6 +61,16 @@ export function App() {
       />
       <Route
         path="/sme"
+        element={
+          <ProtectedRoute allowedRoles={['sme']}>
+            <AppShell>
+              <SmeReviewPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sme/overview"
         element={
           <ProtectedRoute allowedRoles={['sme']}>
             <AppShell>

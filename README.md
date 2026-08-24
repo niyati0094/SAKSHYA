@@ -79,7 +79,7 @@ executed and verified, never merely written.
 | 0 | Repository & environment audit | ✅ Verified |
 | 1 | Foundation — auth, RBAC, schema, health, demo users | ✅ Verified |
 | 2 | Competency system, evidence ledger, deterministic engine | ✅ Verified |
-| 3 | Document upload, RAG, grounded MCQ, SME review | Not started |
+| 3 | Document upload, RAG, grounded MCQ, SME review | ✅ Verified |
 | 4 | Statistical simulation lab | Not started |
 | 5 | Gap detection & explainable recommender | Not started |
 | 6 | Dashboards, learning catalogue, iGOT boundary | Not started |
@@ -116,6 +116,34 @@ non-response course**, and SAKSHYA still refuses to claim the competency —
 one weak evidence type carries only 0.37 effective weight. Every figure is
 reproducible by hand from `GET /api/v1/competency-method`, which publishes the
 constants used.
+
+## How generated questions stay honest
+
+```
+Upload → extract (page-aware) → chunk (heading-aware) → embed
+      → retrieve → draft → VERIFY GROUNDING → tag competency → SME review
+```
+
+The generator is **extractive**: every stem, correct answer and distractor is
+lifted from real sentences in the uploaded document, so it cannot hallucinate
+a fact or invent a citation. Distractors are real statements from *other*
+passages of the same document — plausible, but wrong answers to the question
+asked.
+
+Each draft is then checked against the chunk it cites, verifying two separate
+claims: that the passage really contains the quote, and that the answer marked
+correct actually appears in it. Failures are stored **flagged**, not discarded,
+so a generation failure is visible to a reviewer rather than silently dropped.
+An SME edit re-runs the same verification — grounding is never assumed to
+survive an edit.
+
+Competency tags are AI *suggestions*, accepted only when the best match is both
+close enough and clearly closer than the runner-up. In the seeded demo 4 of 8
+questions are tagged and 4 are deliberately left untagged for the expert —
+guessing would be worse than admitting uncertainty.
+
+**Learners only ever see approved questions.** Nothing unreviewed reaches an
+assessment.
 
 ## Architecture
 

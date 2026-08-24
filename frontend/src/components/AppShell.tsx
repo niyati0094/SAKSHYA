@@ -30,11 +30,20 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <nav className="shell-nav" aria-label="Main navigation">
             <NavLink to={dashboardPathFor(user.role)} end className="nav-link">
-              {user.role === 'learner' ? 'Competency profile' : 'Dashboard'}
+              {user.role === 'learner'
+                ? 'Competency profile'
+                : user.role === 'sme'
+                  ? 'Review queue'
+                  : 'Dashboard'}
             </NavLink>
             {user.role === 'learner' && (
               <NavLink to="/learner/evidence" className="nav-link">
                 Evidence ledger
+              </NavLink>
+            )}
+            {user.role === 'sme' && (
+              <NavLink to="/sme/overview" className="nav-link">
+                Overview
               </NavLink>
             )}
           </nav>

@@ -13,4 +13,10 @@ class Base(DeclarativeBase):
 
 def import_models() -> None:
     """Import all model modules so they register against ``Base.metadata``."""
-    from app.models import competency, evidence, user  # noqa: F401
+    from app.models import (  # noqa: F401
+        competency,
+        document,
+        evidence,
+        question,
+        user,
+    )

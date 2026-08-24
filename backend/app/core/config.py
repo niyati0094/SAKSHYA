@@ -40,6 +40,14 @@ class Settings(BaseSettings):
     # CORS - comma-separated origins
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # AI providers. "mock" is the deterministic offline implementation and the
+    # default; no API key is read or required. See app/ai/providers/.
+    ai_provider: str = "mock"
+
+    # Where uploaded learning material is stored on disk.
+    upload_dir: str = "./storage/uploads"
+    max_upload_bytes: int = 10 * 1024 * 1024
+
     @property
     def is_development(self) -> bool:
         return self.environment.lower() in {"development", "dev", "local", "test"}

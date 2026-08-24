@@ -130,6 +130,64 @@ export interface EvidenceRecord {
   is_prototype_data: boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Documents and generated questions (Milestone 3)
+// ---------------------------------------------------------------------------
+
+export interface DocumentSummary {
+  id: number;
+  title: string;
+  filename: string;
+  content_type: string;
+  byte_size: number;
+  page_count: number;
+  chunk_count: number;
+  status: 'uploaded' | 'processing' | 'ready' | 'failed';
+  error_message: string | null;
+  uploaded_at: string;
+  is_prototype_data: boolean;
+}
+
+export interface Citation {
+  document_id: number;
+  document_title: string;
+  chunk_id: number;
+  page_number: number | null;
+  section_title: string | null;
+  quote: string;
+}
+
+export interface GeneratedQuestion {
+  id: number;
+  stem: string;
+  options: string[];
+  correct_index: number;
+  explanation: string;
+  citation: Citation;
+  grounding_status: 'grounded' | 'ungrounded';
+  grounding_score: number;
+  grounding_note: string | null;
+  competency_id: number | null;
+  competency_name: string | null;
+  competency_tag_score: number | null;
+  review_status: 'pending' | 'approved' | 'rejected';
+  review_note: string | null;
+  reviewed_at: string | null;
+  edited: boolean;
+  generator: string;
+  generation_strategy: string | null;
+  is_prototype_data: boolean;
+}
+
+export interface ReviewSummary {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  ungrounded: number;
+  untagged: number;
+}
+
 export interface CompetencyDetail {
   competency: Competency;
   target_level: number | null;

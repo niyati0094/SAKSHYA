@@ -6,6 +6,7 @@ import { AuthProvider } from './auth/AuthContext';
 import './styles.css';
 import './styles-competency.css';
 import './styles-review.css';
+import './styles-simulation.css';
 
 const container = document.getElementById('root');
 if (!container) {

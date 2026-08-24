@@ -208,3 +208,76 @@ export interface CompetencyDetail {
   };
   calculated_at: string;
 }
+
+// ---------------------------------------------------------------------------
+// Simulation lab (Milestone 4)
+// ---------------------------------------------------------------------------
+
+export interface ScenarioSummary {
+  code: string;
+  title: string;
+  summary: string;
+  competency_code: string;
+  estimated_minutes: number;
+  decision_count: number;
+}
+
+export interface ScenarioOption {
+  key: string;
+  text: string;
+}
+
+export interface ScenarioDecision {
+  key: string;
+  prompt: string;
+  context: string;
+  options: ScenarioOption[];
+}
+
+export interface ScenarioDetail extends ScenarioSummary {
+  briefing: string;
+  decisions: ScenarioDecision[];
+  prototype_notice: string;
+}
+
+export interface DecisionOutcome {
+  decision_key: string;
+  prompt: string;
+  chosen_key: string | null;
+  chosen_text: string | null;
+  credit: number;
+  weight: number;
+  rationale: string;
+  best_key: string;
+  best_text: string;
+  is_best: boolean;
+  answered: boolean;
+}
+
+export interface AttemptResult {
+  attempt_id: number;
+  scenario_code: string;
+  scenario_title: string;
+  score: number;
+  max_score: number;
+  percentage: number;
+  band: string;
+  answered_count: number;
+  total_decisions: number;
+  outcomes: DecisionOutcome[];
+  explanation: string[];
+  debrief: string | null;
+  evidence_id: number | null;
+  competency_code: string;
+  scoring_note: string;
+}
+
+export interface SimulationAttemptSummary {
+  id: number;
+  scenario_code: string;
+  scenario_title: string;
+  percentage: number;
+  band: string;
+  completed_at: string;
+  evidence_id: number | null;
+}

@@ -18,5 +18,6 @@ def import_models() -> None:
         document,
         evidence,
         question,
+        simulation,
         user,
     )

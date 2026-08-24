@@ -6,6 +6,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage';
 import { LearnerDashboard } from './pages/LearnerDashboard';
 import { LoginPage } from './pages/LoginPage';
+import { SimulationAttemptPage, SimulationRunPage } from './pages/SimulationRunPage';
+import { SimulationsPage } from './pages/SimulationsPage';
 import { SmeReviewPage } from './pages/SmeReviewPage';
 import { useAuth } from './auth/AuthContext';
 import { dashboardPathFor } from './routes';
@@ -45,6 +47,36 @@ export function App() {
           <ProtectedRoute allowedRoles={['learner']}>
             <AppShell>
               <CompetencyDetailPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/simulations"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <SimulationsPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/simulations/attempts/:attemptId"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <SimulationAttemptPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/simulations/:scenarioCode"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <SimulationRunPage />
             </AppShell>
           </ProtectedRoute>
         }

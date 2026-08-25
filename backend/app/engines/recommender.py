@@ -18,10 +18,6 @@ from app.catalog.base import LearningResource, ResourceKind
 from app.engines.competency import CompetencyResult, CompetencyStatus
 from app.engines.gap import Gap
 
-#: Confidence at or above which a learner is considered to have *shown* the
-#: capability rather than merely scored well once.
-PROVEN_CONFIDENCE = 0.6
-
 #: Evidence types that count as having practised, as opposed to having read.
 PRACTICE_EVIDENCE_TYPES = frozenset({"simulation", "practical_submission", "sme_verified"})
 
@@ -46,22 +42,19 @@ def choose_stage(result: CompetencyResult, evidence_types: set[str]) -> str:
 
     The rule is about what kind of evidence exists, not about scores:
 
-    * nothing accepted at all      -> LEARN
-    * only passive evidence        -> PRACTICE
-    * practised but low confidence -> PROVE
+    * nothing accepted at all -> LEARN
+    * only passive evidence   -> PRACTICE
+    * already practised       -> PROVE
     """
     if result.status == CompetencyStatus.NO_EVIDENCE or not evidence_types:
         return ResourceKind.LEARN
 
-    has_practised = bool(evidence_types & PRACTICE_EVIDENCE_TYPES)
-
-    if not has_practised:
+    if not (evidence_types & PRACTICE_EVIDENCE_TYPES):
         # Read a course or answered a quiz, but never done the work.
-        return ResourceKind.PRACTICE if result.status != CompetencyStatus.NO_EVIDENCE else ResourceKind.LEARN
+        return ResourceKind.PRACTICE
 
-    if result.confidence < PROVEN_CONFIDENCE:
-        return ResourceKind.PROVE
-
+    # Already practised, yet still short of the role's target: the remaining
+    # step is to demonstrate the capability and generate stronger evidence.
     return ResourceKind.PROVE
 
 
@@ -175,6 +168,12 @@ def _pick_resource(
     # about. Without this, a learner whose next step is "practise" is pointed at
     # a catalogue entry that leads nowhere, while a runnable simulation for the
     # same competency sits one stage away.
+    #
+    # LEARN is exempt: a learner with no evidence at all should be sent to the
+    # learning material even when it is not clickable here. Jumping them
+    # straight to a scored simulation because it happens to be interactive
+    # would skip the stage they actually need.
+    prefer_interactive = stage != ResourceKind.LEARN
     first_non_interactive: LearningResource | None = None
 
     for candidate_stage in fallbacks.get(stage, [stage]):
@@ -182,11 +181,14 @@ def _pick_resource(
         if not matching:
             continue
 
-        interactive = [item for item in matching if item.is_interactive]
-        if interactive:
-            return best_of(interactive)
+        if prefer_interactive:
+            interactive = [item for item in matching if item.is_interactive]
+            if interactive:
+                return best_of(interactive)
 
-        if first_non_interactive is None:
-            first_non_interactive = best_of(matching)
+            if first_non_interactive is None:
+                first_non_interactive = best_of(matching)
+        else:
+            return best_of(matching)
 
     return first_non_interactive

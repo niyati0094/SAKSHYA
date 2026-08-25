@@ -1,10 +1,13 @@
 """Role-scoped dashboard roots.
 
-Milestone 1 establishes the RBAC boundary and the real identity/capability
-payload each role receives. The competency, evidence and review data served
-from these roots arrives in later milestones; the ``pending_modules`` field
-states plainly what is not yet wired rather than returning placeholder
-numbers that look real.
+Establishes the RBAC boundary and returns each role's identity and capability
+list. Capabilities are the authoritative record of what the server will
+actually authorise, so the UI cannot drift from real authorisation rules.
+
+``pending_modules`` lists functionality not yet wired. Every module that was
+listed here during earlier milestones now exists, so the lists are empty - the
+field is kept because reporting "nothing pending" honestly is better than
+removing the mechanism that made incompleteness visible.
 """
 
 from fastapi import APIRouter, Depends
@@ -56,23 +59,14 @@ def _payload(user: User, pending: list[str]) -> dict:
 
 @router.get("/learner")
 def learner_dashboard(current_user: User = Depends(require_learner)) -> dict:
-    return _payload(
-        current_user,
-        pending=["competency_profile", "competency_gaps", "evidence_ledger", "recommendations"],
-    )
+    return _payload(current_user, pending=[])
 
 
 @router.get("/sme")
 def sme_dashboard(current_user: User = Depends(require_sme)) -> dict:
-    return _payload(
-        current_user,
-        pending=["generated_question_queue", "evidence_review"],
-    )
+    return _payload(current_user, pending=[])
 
 
 @router.get("/admin")
 def admin_dashboard(current_user: User = Depends(require_admin)) -> dict:
-    return _payload(
-        current_user,
-        pending=["aggregate_gaps", "role_distribution", "training_needs"],
-    )
+    return _payload(current_user, pending=[])

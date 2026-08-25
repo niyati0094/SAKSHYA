@@ -21,6 +21,7 @@ Honest description of what this is and is not:
 from __future__ import annotations
 
 import hashlib
+import itertools
 import math
 import re
 from collections import Counter
@@ -34,10 +35,15 @@ EMBEDDING_DIMENSIONS = 1024
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 _STOPWORDS = frozenset(
-    """a an and are as at be been by for from has have in is it its of on or that the
-    to was were which with within without this these those than then when where
-    while such not but their there they can may must should would could each every
-    all any into more most other some only same so if because""".split()
+    {
+        "a", "an", "and", "are", "as", "at", "be", "been", "by", "for", "from",
+        "has", "have", "in", "is", "it", "its", "of", "on", "or", "that", "the",
+        "to", "was", "were", "which", "with", "within", "without", "this",
+        "these", "those", "than", "then", "when", "where", "while", "such",
+        "not", "but", "their", "there", "they", "can", "may", "must", "should",
+        "would", "could", "each", "every", "all", "any", "into", "more", "most",
+        "other", "some", "only", "same", "so", "if", "because",
+    }
 )
 
 
@@ -53,7 +59,7 @@ def _tokenize(text: str) -> list[str]:
 def _features(text: str) -> list[str]:
     """Unigrams plus adjacent bigrams, so short phrases carry some weight."""
     tokens = _tokenize(text)
-    return tokens + [f"{a}_{b}" for a, b in zip(tokens, tokens[1:])]
+    return tokens + [f"{a}_{b}" for a, b in itertools.pairwise(tokens)]
 
 
 class MockEmbeddingProvider:
@@ -163,7 +169,7 @@ def _word_number_options(word: str) -> list[str]:
     for candidate in neighbours:
         if candidate not in seen:
             seen.append(candidate)
-    return [word] + seen[:3]
+    return [word, *seen[:3]]
 
 
 class MockLLMProvider:
@@ -268,7 +274,7 @@ class MockLLMProvider:
         if len(candidates) < 3:
             return None
 
-        options = [sentence] + candidates[:3]
+        options = [sentence, *candidates[:3]]
         stem = f"Which statement about {subject.lower()} is supported by the source material?"
         ordered = self._order_options(stem, options)
 

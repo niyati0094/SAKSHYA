@@ -12,15 +12,15 @@ os.environ["SAKSHYA_DATABASE_URL"] = (
     "sqlite:///" + os.path.join(tempfile.gettempdir(), "sakshya_test_lifespan.db")
 )
 
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
-from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
-from sqlalchemy.pool import StaticPool  # noqa: E402
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
-from app.db.base import Base, import_models  # noqa: E402
-from app.db.session import get_db  # noqa: E402
-from app.main import app  # noqa: E402
+from app.db.base import Base, import_models
+from app.db.session import get_db
+from app.main import app
 
 
 @pytest.fixture

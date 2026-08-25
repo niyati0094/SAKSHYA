@@ -240,8 +240,27 @@ def test_competency_with_no_evidence_starts_at_learn(client, learner):
     item = next(
         (r for r in body["recommendations"] if r["competency_code"] == "COMP-ADMIN"), None
     )
-    if item is not None:
-        assert item["stage"] == "learn"
+    assert item is not None
+    assert item["stage"] == "learn"
+
+
+def test_a_learner_with_no_evidence_is_not_sent_straight_to_a_simulation(client, learner):
+    """Preferring actionable resources must not let a learner skip learning."""
+    body = pathway(client, learner)
+    item = next(r for r in body["recommendations"] if r["competency_code"] == "COMP-ADMIN")
+
+    assert item["resource"]["kind"] == "learn", (
+        "a competency with no evidence must recommend learning material, "
+        f"not {item['resource']['external_id']}"
+    )
+
+
+def test_a_stage_always_matches_the_kind_of_resource_offered_or_moves_forward(client, learner):
+    """A recommendation may step forward from its stage, but never backward."""
+    order = {"learn": 0, "practice": 1, "prove": 2}
+
+    for item in pathway(client, learner)["recommendations"]:
+        assert order[item["resource"]["kind"]] >= order[item["stage"]], item["competency_code"]
 
 
 def test_pathway_states_no_live_igot_integration(client, learner):

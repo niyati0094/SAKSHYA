@@ -71,7 +71,7 @@ cd backend && .venv/Scripts/python -m pytest
 cd frontend && npm test
 ```
 
-211 backend tests and 19 frontend tests. The backend suite covers the
+202 backend tests and 19 frontend tests. The backend suite covers the
 deterministic engines against hand-computed values, RBAC across every
 role pair, grounding verification, and the full evidence loop.
 

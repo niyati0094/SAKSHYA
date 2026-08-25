@@ -9,14 +9,12 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_current_user, require_admin, require_roles
+from app.core.deps import get_current_user, require_admin
 from app.db.session import get_db
-from app.models.user import User, UserRole
+from app.models.user import User
 from app.services import analytics_service, competency_service
 
 router = APIRouter(tags=["admin"])
-
-require_staff = require_roles(UserRole.ADMIN, UserRole.SME)
 
 
 class RoleDistributionOut(BaseModel):

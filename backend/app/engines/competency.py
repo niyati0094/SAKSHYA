@@ -235,7 +235,10 @@ def calculate_competency(
     effective_weights = [weight * recency for _, weight, recency in counted]
     total_effective = sum(effective_weights)
     mastery = (
-        sum(item.score * effective for (item, _, _), effective in zip(counted, effective_weights))
+        sum(
+            item.score * effective
+            for (item, _, _), effective in zip(counted, effective_weights, strict=True)
+        )
         / total_effective
     )
 
@@ -243,7 +246,7 @@ def calculate_competency(
     # precisely which evidence drove the result.
     share_by_id = {
         item.evidence_id: effective / total_effective
-        for (item, _, _), effective in zip(counted, effective_weights)
+        for (item, _, _), effective in zip(counted, effective_weights, strict=True)
     }
     contributions = [
         EvidenceContribution(

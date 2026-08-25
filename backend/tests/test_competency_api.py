@@ -1,5 +1,7 @@
 """Competency profile, evidence ledger and explainability endpoints."""
 
+import pytest
+
 from tests.conftest import auth_header, login
 
 
@@ -116,9 +118,8 @@ def test_contributions_let_the_mastery_be_recomputed_by_hand(client, seeded_lear
     counted = [c for c in body["contributions"] if c["counted"]]
     recomputed = sum(c["score"] * c["contribution_share"] for c in counted)
 
-    assert recomputed == round(body["result"]["mastery"], 2) or abs(
-        recomputed - body["result"]["mastery"]
-    ) < 0.01
+    # Shares are rounded to 4dp in the response, so allow only that much drift.
+    assert recomputed == pytest.approx(body["result"]["mastery"], abs=1e-3)
 
 
 def test_pending_evidence_is_visible_but_excluded(client, seeded_learner):

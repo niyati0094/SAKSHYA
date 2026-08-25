@@ -120,7 +120,13 @@ def test_score_matches_a_hand_computation():
 
 @pytest.mark.parametrize(
     "pct,band",
-    [(1.0, "Strong"), (0.85, "Strong"), (0.7, "Competent"), (0.5, "Developing"), (0.1, "Needs support")],
+    [
+        (1.0, "Strong"),
+        (0.85, "Strong"),
+        (0.7, "Competent"),
+        (0.5, "Developing"),
+        (0.1, "Needs support"),
+    ],
 )
 def test_bands(pct, band):
     assert band_for(pct) == band
@@ -273,4 +279,5 @@ def test_attempts_list_is_scoped_to_the_caller(client, seeded_learner):
 
 def test_simulation_requires_authentication(client):
     assert client.get("/api/v1/simulations").status_code == 401
-    assert client.post("/api/v1/simulations/SIM-NRES/submit", json={"answers": {}}).status_code == 401
+    response = client.post("/api/v1/simulations/SIM-NRES/submit", json={"answers": {}})
+    assert response.status_code == 401

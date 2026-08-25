@@ -1,0 +1,34 @@
+# Render blueprint — single service.
+#
+# The API process also serves the built frontend, so there is one service and
+# one origin: no CORS, no reverse proxy, no separate API base URL.
+#
+# NOTE: this file has not been deployed from this machine. The build and start
+# commands below are the same ones verified locally (see docs/DEPLOY.md); the
+# Render platform behaviour around them is not something this repository can
+# prove. Treat the first deploy as the real test.
+
+services:
+  - type: web
+    name: sakshya
+    runtime: python
+    plan: free
+    buildCommand: ./scripts/build.sh
+    startCommand: cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.2"
+      - key: SAKSHYA_ENVIRONMENT
+        value: production
+      # Generated once by Render and kept. The app refuses to boot outside
+      # development without this, which is deliberate.
+      - key: SAKSHYA_SECRET_KEY
+        generateValue: true
+      # Free instances have an ephemeral disk: the SQLite file is lost on every
+      # restart. Auto-seed rebuilds the prototype demo data so the deployment is
+      # never empty. Attach a persistent disk before treating data as durable.
+      - key: SAKSHYA_AUTO_SEED
+        value: "true"
+      - key: SAKSHYA_DATABASE_URL
+        value: sqlite:///./sakshya.db

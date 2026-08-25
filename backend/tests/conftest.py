@@ -8,6 +8,9 @@ import os
 import tempfile
 
 os.environ.setdefault("SAKSHYA_ENVIRONMENT", "test")
+# Tests seed their own isolated fixtures; startup seeding would be both slow
+# and a source of state leaking between tests.
+os.environ["SAKSHYA_AUTO_SEED"] = "false"
 os.environ["SAKSHYA_DATABASE_URL"] = (
     "sqlite:///" + os.path.join(tempfile.gettempdir(), "sakshya_test_lifespan.db")
 )

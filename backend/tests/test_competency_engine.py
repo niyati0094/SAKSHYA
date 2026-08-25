@@ -97,14 +97,19 @@ def test_course_completion_is_the_weakest_evidence_type():
     assert weights["simulation"] > weights["assessment"] > weights["course_completion"]
 
 
-def test_a_perfect_course_score_alone_is_insufficient_evidence():
-    """The headline behaviour: 100% on a course does not establish competency."""
+def test_a_perfect_course_score_alone_establishes_nothing():
+    """The headline behaviour: 100% on a course does not establish competency.
+
+    Course completion is weighted 0.0, so it contributes no evidence at all -
+    not merely insufficient evidence.
+    """
     result = calculate_competency(1, [ev(1, "course_completion", 1.0, 40)], NOW)
 
-    assert result.status == CompetencyStatus.INSUFFICIENT_EVIDENCE
+    assert result.status == CompetencyStatus.NO_EVIDENCE
     assert result.level == 0, "no level may be asserted on course completion alone"
-    assert result.effective_evidence < MIN_EFFECTIVE_EVIDENCE
-    assert any("below the" in line for line in result.explanation)
+    assert result.mastery is None
+    assert result.effective_evidence == 0.0
+    assert any("weighted 0.0 by design" in line for line in result.explanation)
 
 
 def test_a_simulation_outweighs_a_course_completion_at_the_same_score():

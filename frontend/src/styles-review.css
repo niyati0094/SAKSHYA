@@ -195,3 +195,114 @@
     align-items: stretch;
   }
 }
+
+/* --- verification gates --- */
+
+.gate-card {
+  border-left: 3px solid var(--accent);
+}
+
+.gate-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.gate-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  background: var(--surface);
+}
+
+.gate-list li.gate-fired {
+  border-color: #fecaca;
+  background: var(--danger-soft);
+}
+
+.gate-code {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-strong);
+  min-width: 26px;
+}
+
+.gate-fired .gate-code {
+  color: var(--danger);
+}
+
+.gate-name {
+  flex: 1;
+}
+
+.gate-count {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.gate-fired .gate-count {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.gate-note {
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+  line-height: 1.6;
+}
+
+/* --- gate bench --- */
+
+.gate-bench {
+  border-left: 3px solid var(--warn);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.bench-presets {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bench-result {
+  border-top: 1px solid var(--line);
+  padding-top: 0.9rem;
+}
+
+.bench-verdict {
+  font-weight: 650;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.8rem;
+}
+
+.bench-verdict.ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border: 1px solid #a7f3d0;
+}
+
+.bench-verdict.fail {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid #fecaca;
+}
+
+.bench-note {
+  color: var(--ink-soft);
+  line-height: 1.6;
+  background: var(--canvas);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+}

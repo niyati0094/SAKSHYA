@@ -40,12 +40,17 @@ LEVEL_BANDS: dict[int, float] = {
 # most weight.
 
 EVIDENCE_TYPE_WEIGHTS: dict[str, float] = {
-    "simulation": 1.5,          # made real decisions in a scenario
-    "practical_submission": 1.4,  # produced work, reviewed by an SME
-    "sme_verified": 1.2,        # expert attested to observed capability
-    "assessment": 1.0,          # answered questions correctly (baseline)
-    "peer_review": 0.8,         # colleague assessment
-    "course_completion": 0.4,   # attendance only - deliberately weak
+    "simulation": 3.0,            # decisions made in a scenario: closest proxy
+                                  # available to workplace judgement
+    "practical_submission": 2.0,  # produced work, reviewed by an SME
+    "sme_verified": 2.0,          # expert attested to observed capability
+    "assessment": 1.0,            # answered questions correctly (recall baseline)
+    "peer_review": 0.5,           # colleague assessment; unverified
+    # Explicitly zero, and displayed as zero. Attendance is not capability, so
+    # course completion contributes NOTHING to a competency estimate. This is a
+    # stated design position, not a tuning choice: a weight above zero would
+    # mean enough courses could establish a competency nobody has demonstrated.
+    "course_completion": 0.0,
 }
 
 DEFAULT_EVIDENCE_WEIGHT = 1.0

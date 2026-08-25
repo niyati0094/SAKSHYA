@@ -65,6 +65,9 @@ class GeneratedQuestion(Base):
     )
     grounding_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     grounding_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    #: Which verification gate rejected this item (G1-G5), or None if it passed.
+    #: Recorded by name so the rejection rate can be reported per gate.
+    failed_gate: Mapped[str | None] = mapped_column(String(4), nullable=True, index=True)
 
     #: Suggested by similarity, confirmed by an SME. Nullable: an untagged
     #: question is surfaced for tagging rather than guessed at.

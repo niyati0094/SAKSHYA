@@ -179,7 +179,7 @@ def test_submitting_generates_evidence_and_moves_the_competency(client, seeded_l
         )
 
     before = nres_entry()
-    assert before["result"]["status"] == "insufficient_evidence"
+    assert before["result"]["status"] == "no_evidence"
 
     response = client.post(
         f"/api/v1/simulations/{scenario.code}/submit",

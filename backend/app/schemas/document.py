@@ -59,6 +59,8 @@ class GeneratedQuestionOut(BaseModel):
     grounding_status: str
     grounding_score: float
     grounding_note: str | None
+    failed_gate: str | None
+    failed_gate_name: str | None
 
     competency_id: int | None
     competency_name: str | None
@@ -81,6 +83,12 @@ class ReviewSummaryOut(BaseModel):
     rejected: int
     ungrounded: int
     untagged: int
+    #: Rejection rate across all generated items. A pipeline that never
+    #: rejects anything is not verifying anything.
+    rejection_rate: float
+    #: How many items each gate rejected, keyed "G1".."G5".
+    rejections_by_gate: dict[str, int]
+    gate_names: dict[str, str]
 
 
 class QuestionReviewRequest(BaseModel):
@@ -101,3 +109,32 @@ class QuestionReviewRequest(BaseModel):
 
 class GenerateRequest(BaseModel):
     max_questions: int = Field(default=8, ge=1, le=40)
+
+
+class GateCheckRequest(BaseModel):
+    """Run the verification gates against an arbitrary candidate item.
+
+    Nothing is stored. This exists so a reviewer can test the pipeline against a
+    known-bad item and watch which gate catches it.
+    """
+
+    passage: str = Field(min_length=20, max_length=4000)
+    stem: str = Field(min_length=5, max_length=1000)
+    options: list[str] = Field(min_length=2, max_length=8)
+    correct_index: int = Field(ge=0)
+    source_quote: str | None = None
+
+
+class GateOutcomeOut(BaseModel):
+    gate: str
+    name: str
+    passed: bool
+    note: str | None
+
+
+class GateCheckOut(BaseModel):
+    passed: bool
+    failed_gate: str | None
+    failed_gate_name: str | None
+    note: str | None
+    outcomes: list[GateOutcomeOut]

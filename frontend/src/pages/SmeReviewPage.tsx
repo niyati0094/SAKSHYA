@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ApiError, apiFetch } from '../api/client';
+import { GateBench } from '../components/GateBench';
 import type { GeneratedQuestion, ReviewSummary } from '../types';
 
 type Filter = 'pending' | 'approved' | 'rejected' | 'all';
@@ -62,9 +63,11 @@ function QuestionCard({
           </span>
           <span
             className={`ground-badge ground-${question.grounding_status}`}
-            title={question.grounding_note ?? 'Answer verified against the cited passage'}
+            title={question.grounding_note ?? 'Passed all five verification gates'}
           >
-            {question.grounding_status === 'grounded' ? '✓ Grounded' : '⚠ Ungrounded'}
+            {question.grounding_status === 'grounded'
+              ? '✓ Passed 5 gates'
+              : `✗ ${question.failed_gate} ${question.failed_gate_name}`}
           </span>
           {question.competency_name ? (
             <span className="tag-badge">{question.competency_name}</span>
@@ -267,9 +270,9 @@ export function SmeReviewPage() {
             <span className="stat-value">{summary.rejected}</span>
             <span className="stat-label">Rejected</span>
           </div>
-          <div className="stat">
-            <span className="stat-value">{summary.ungrounded}</span>
-            <span className="stat-label">Failed grounding</span>
+          <div className="stat stat-danger">
+            <span className="stat-value">{Math.round(summary.rejection_rate * 100)}%</span>
+            <span className="stat-label">Rejected by a gate</span>
           </div>
           <div className="stat">
             <span className="stat-value">{summary.untagged}</span>
@@ -277,6 +280,39 @@ export function SmeReviewPage() {
           </div>
         </section>
       )}
+
+      {summary && (
+        <section className="card gate-card">
+          <h2>Verification gates</h2>
+          <p className="muted small">
+            Every generated item passes five gates before it can reach a learner. The
+            rejection rate is published, not hidden — a pipeline that never rejects
+            anything is not verifying anything.
+          </p>
+          <ul className="gate-list">
+            {Object.entries(summary.gate_names).map(([gate, name]) => {
+              const count = summary.rejections_by_gate[gate] ?? 0;
+              return (
+                <li key={gate} className={count > 0 ? 'gate-fired' : ''}>
+                  <span className="gate-code">{gate}</span>
+                  <span className="gate-name">{name}</span>
+                  <span className="gate-count">
+                    {count > 0 ? `${count} rejected` : 'none rejected'}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="muted small gate-note">
+            <strong>G3 Anchor preservation</strong> is the statistics-specific gate: it
+            rejects a question that drops the population, reference period, unit or
+            denominator its source claim depends on. A definition without its context is
+            not incomplete — it is wrong.
+          </p>
+        </section>
+      )}
+
+      <GateBench />
 
       <div className="filter-row" role="group" aria-label="Filter questions">
         {FILTERS.map((option) => (

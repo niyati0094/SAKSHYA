@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.ai.providers import get_embedding_provider, get_llm_provider
-from app.ai.rag.ground import verify_question
+from app.ai.rag.gates import GATE_NAMES, verify_item
 from app.ai.rag.tag import suggest_competency, tagging_text
 from app.models.competency import Competency
 from app.models.document import DocumentChunk
@@ -83,9 +83,11 @@ def generate_for_document(
         )
 
         for draft in drafts:
-            grounding = verify_question(
+            grounding = verify_item(
+                stem=draft.stem,
+                options=draft.options,
+                correct_index=draft.correct_index,
                 source_quote=draft.source_quote,
-                correct_option=draft.correct_option,
                 chunk_text=chunk.content,
             )
             tag = suggest_competency(
@@ -102,9 +104,10 @@ def generate_for_document(
                 correct_index=draft.correct_index,
                 explanation=draft.explanation,
                 source_quote=draft.source_quote,
-                grounding_status=grounding.status,
-                grounding_score=grounding.score,
+                grounding_status=grounding.grounding_status,
+                grounding_score=grounding.grounding_score,
                 grounding_note=grounding.note,
+                failed_gate=grounding.failed_gate,
                 competency_id=tag.competency_id,
                 competency_tag_score=tag.score,
                 review_status=QuestionReviewStatus.PENDING,
@@ -208,14 +211,17 @@ def review_question(
         chunk = db.get(DocumentChunk, question.chunk_id)
         if chunk is not None:
             options_now = json.loads(question.options_json)
-            grounding = verify_question(
+            grounding = verify_item(
+                stem=question.stem,
+                options=options_now,
+                correct_index=question.correct_index,
                 source_quote=question.source_quote,
-                correct_option=options_now[question.correct_index],
                 chunk_text=chunk.content,
             )
-            question.grounding_status = grounding.status
-            question.grounding_score = grounding.score
+            question.grounding_status = grounding.grounding_status
+            question.grounding_score = grounding.grounding_score
             question.grounding_note = grounding.note
+            question.failed_gate = grounding.failed_gate
 
     question.review_status = decision
     question.reviewed_by_id = reviewer_id
@@ -244,4 +250,14 @@ def review_summary(db: Session) -> dict:
             1 for q in questions if q.grounding_status is GroundingStatus.UNGROUNDED
         ),
         "untagged": sum(1 for q in questions if q.competency_id is None),
+        "rejection_rate": (
+            round(sum(1 for q in questions if q.failed_gate) / len(questions), 4)
+            if questions
+            else 0.0
+        ),
+        "rejections_by_gate": {
+            gate: sum(1 for q in questions if q.failed_gate == gate)
+            for gate in GATE_NAMES
+        },
+        "gate_names": dict(GATE_NAMES),
     }

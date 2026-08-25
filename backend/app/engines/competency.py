@@ -234,6 +234,25 @@ def calculate_competency(
     # --- Mastery: recency-weighted, type-weighted mean of evidence scores ---
     effective_weights = [weight * recency for _, weight, recency in counted]
     total_effective = sum(effective_weights)
+
+    if total_effective == 0.0:
+        # Every accepted item carries zero weight - in practice, nothing but
+        # course completions. There is genuinely no evidence of capability
+        # here, only evidence of attendance, so no mastery is computed at all.
+        return CompetencyResult(
+            competency_id=competency_id,
+            status=CompetencyStatus.NO_EVIDENCE,
+            mastery=None,
+            level=0,
+            level_label=level_label(0),
+            confidence=0.0,
+            confidence_breakdown=None,
+            evidence_count=len(evidence),
+            counted_evidence_count=len(counted),
+            effective_evidence=0.0,
+            contributions=contributions,
+            explanation=_explain_zero_weight(counted),
+        )
     mastery = (
         sum(
             item.score * effective
@@ -334,6 +353,22 @@ _LIMITING_FACTOR_ADVICE = {
     "recency": "more recent evidence would raise confidence most",
     "agreement": "evidence scores disagree with each other, which lowers confidence",
 }
+
+
+def _explain_zero_weight(counted: list[tuple[EvidenceInput, float, float]]) -> list[str]:
+    """Explain a competency whose only evidence is weighted zero."""
+    types = sorted({item.evidence_type for item, _, _ in counted})
+    readable = ", ".join(t.replace("_", " ") for t in types)
+    best = max(item.score for item, _, _ in counted)
+
+    return [
+        f"{len(counted)} accepted record(s) exist ({readable}), but they carry a "
+        f"combined weight of zero, so no mastery is calculated.",
+        f"The highest recorded score is {best:.0%}, and it still establishes "
+        "nothing: course completion is weighted 0.0 by design, because "
+        "attendance is not demonstrated capability.",
+        "Complete an assessment or a simulation to generate evidence that counts.",
+    ]
 
 
 def _explain_no_evidence(evidence: list[EvidenceInput]) -> list[str]:

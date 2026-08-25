@@ -5,12 +5,16 @@ import json
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.ai.rag.gates import GATE_NAMES, verify_item
 from app.core.deps import get_current_user, require_roles
 from app.db.session import get_db
 from app.models.question import GeneratedQuestion, QuestionReviewStatus
 from app.models.user import User, UserRole
 from app.schemas.document import (
     CitationOut,
+    GateCheckOut,
+    GateCheckRequest,
+    GateOutcomeOut,
     GeneratedQuestionOut,
     GenerateRequest,
     QuestionReviewRequest,
@@ -42,6 +46,8 @@ def _to_out(question: GeneratedQuestion) -> GeneratedQuestionOut:
         grounding_status=question.grounding_status.value,
         grounding_score=question.grounding_score,
         grounding_note=question.grounding_note,
+        failed_gate=question.failed_gate,
+        failed_gate_name=GATE_NAMES.get(question.failed_gate) if question.failed_gate else None,
         competency_id=question.competency_id,
         competency_name=question.competency.name if question.competency else None,
         competency_tag_score=question.competency_tag_score,
@@ -154,3 +160,40 @@ def review_question(
         ) from exc
 
     return _to_out(updated)
+
+
+@router.post("/questions/check-gates", response_model=GateCheckOut)
+def check_gates(
+    payload: GateCheckRequest,
+    _: User = Depends(require_content_manager),
+) -> GateCheckOut:
+    """Run the five gates against a candidate item without storing anything.
+
+    A verification pipeline that cannot be tested is a claim, not a control.
+    This lets a reviewer take a passage and a deliberately flawed question and
+    watch which gate rejects it - including G3, which catches a question that
+    drops the context its source claim depends on.
+    """
+    if payload.correct_index >= len(payload.options):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="correct_index is outside the option list.",
+        )
+
+    result = verify_item(
+        stem=payload.stem,
+        options=payload.options,
+        correct_index=payload.correct_index,
+        # Default the quote to the passage itself: the point of this bench is
+        # to exercise the later gates, not to test citation lookup.
+        source_quote=payload.source_quote or payload.passage,
+        chunk_text=payload.passage,
+    )
+
+    return GateCheckOut(
+        passed=result.passed,
+        failed_gate=result.failed_gate,
+        failed_gate_name=result.failed_gate_name,
+        note=result.note,
+        outcomes=[GateOutcomeOut(**outcome.__dict__) for outcome in result.outcomes],
+    )

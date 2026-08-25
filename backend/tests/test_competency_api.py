@@ -56,11 +56,12 @@ def test_sampling_design_is_below_target(client, seeded_learner):
     assert entry["result"]["level"] < entry["target_level"]
 
 
-def test_course_completion_alone_yields_insufficient_evidence(client, seeded_learner):
-    """95% on a course must not establish competency."""
+def test_course_completion_alone_establishes_nothing(client, seeded_learner):
+    """95% on a course must not establish competency - it carries zero weight."""
     entry = find(get_profile(client, seeded_learner), "COMP-NRES")
 
-    assert entry["result"]["status"] == "insufficient_evidence"
+    assert entry["result"]["status"] == "no_evidence"
+    assert entry["result"]["mastery"] is None
     assert entry["result"]["level"] == 0
     assert entry["meets_target"] is False
 

@@ -167,6 +167,8 @@ export interface GeneratedQuestion {
   grounding_status: 'grounded' | 'ungrounded';
   grounding_score: number;
   grounding_note: string | null;
+  failed_gate: string | null;
+  failed_gate_name: string | null;
   competency_id: number | null;
   competency_name: string | null;
   competency_tag_score: number | null;
@@ -186,6 +188,9 @@ export interface ReviewSummary {
   rejected: number;
   ungrounded: number;
   untagged: number;
+  rejection_rate: number;
+  rejections_by_gate: Record<string, number>;
+  gate_names: Record<string, string>;
 }
 
 export interface CompetencyDetail {
@@ -363,4 +368,19 @@ export interface OrganisationOverview {
   training_needs: TrainingNeed[];
   calculated_at: string;
   notice: string;
+}
+
+export interface GateOutcome {
+  gate: string;
+  name: string;
+  passed: boolean;
+  note: string | null;
+}
+
+export interface GateCheckResult {
+  passed: boolean;
+  failed_gate: string | null;
+  failed_gate_name: string | null;
+  note: string | null;
+  outcomes: GateOutcome[];
 }

@@ -42,11 +42,17 @@ def choose_stage(result: CompetencyResult, evidence_types: set[str]) -> str:
 
     The rule is about what kind of evidence exists, not about scores:
 
-    * nothing accepted at all -> LEARN
-    * only passive evidence   -> PRACTICE
-    * already practised       -> PROVE
+    * no record of any kind -> LEARN
+    * only passive records  -> PRACTICE
+    * already practised     -> PROVE
+
+    Note this deliberately keys off the *records* held, not off whether a
+    mastery estimate could be computed. Someone who has completed a course has
+    a record worth nothing as evidence, but sending them back to another course
+    ignores what they have already done. The useful next step is to measure
+    them - which is what a practice activity does.
     """
-    if result.status == CompetencyStatus.NO_EVIDENCE or not evidence_types:
+    if not evidence_types:
         return ResourceKind.LEARN
 
     if not (evidence_types & PRACTICE_EVIDENCE_TYPES):

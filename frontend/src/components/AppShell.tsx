@@ -38,6 +38,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </NavLink>
             {user.role === 'learner' && (
               <>
+                <NavLink to="/learner/pathway" className="nav-link">
+                  My pathway
+                </NavLink>
                 <NavLink to="/learner/simulations" className="nav-link">
                   Simulation lab
                 </NavLink>

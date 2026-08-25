@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage';
 import { LearnerDashboard } from './pages/LearnerDashboard';
 import { LoginPage } from './pages/LoginPage';
+import { PathwayPage } from './pages/PathwayPage';
 import { SimulationAttemptPage, SimulationRunPage } from './pages/SimulationRunPage';
 import { SimulationsPage } from './pages/SimulationsPage';
 import { SmeReviewPage } from './pages/SmeReviewPage';
@@ -47,6 +48,16 @@ export function App() {
           <ProtectedRoute allowedRoles={['learner']}>
             <AppShell>
               <CompetencyDetailPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/pathway"
+        element={
+          <ProtectedRoute allowedRoles={['learner']}>
+            <AppShell>
+              <PathwayPage />
             </AppShell>
           </ProtectedRoute>
         }

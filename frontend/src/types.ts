@@ -281,3 +281,59 @@ export interface SimulationAttemptSummary {
   completed_at: string;
   evidence_id: number | null;
 }
+
+// ---------------------------------------------------------------------------
+// Gaps and pathway (Milestone 5)
+// ---------------------------------------------------------------------------
+
+export interface Gap {
+  competency_id: number;
+  competency_code: string;
+  competency_name: string;
+  current_level: number;
+  target_level: number;
+  level_shortfall: number;
+  status: string;
+  confidence: number;
+  criticality: string;
+  severity: number;
+  severity_band: 'urgent' | 'significant' | 'moderate' | 'minor';
+  evidence_limited: boolean;
+  reasons: string[];
+}
+
+export interface LearningResourceOut {
+  external_id: string;
+  title: string;
+  description: string;
+  kind: 'learn' | 'practice' | 'prove';
+  competency_code: string;
+  target_level: number;
+  estimated_minutes: number;
+  provider: string;
+  prerequisites: string[];
+  url: string | null;
+  is_prototype_data: boolean;
+}
+
+export interface Recommendation {
+  rank: number;
+  competency_code: string;
+  competency_name: string;
+  stage: 'learn' | 'practice' | 'prove';
+  resource: LearningResourceOut;
+  severity: number;
+  severity_band: 'urgent' | 'significant' | 'moderate' | 'minor';
+  reasons: string[];
+  unmet_prerequisites: string[];
+  blocked: boolean;
+}
+
+export interface Pathway {
+  role: StatisticalRole | null;
+  gaps: Gap[];
+  recommendations: Recommendation[];
+  catalog: { adapter: string; is_live_integration: boolean; notice: string };
+  calculated_at: string;
+  method_note: string;
+}

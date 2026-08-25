@@ -7,6 +7,7 @@ import './styles.css';
 import './styles-competency.css';
 import './styles-review.css';
 import './styles-simulation.css';
+import './styles-pathway.css';
 
 const container = document.getElementById('root');
 if (!container) {

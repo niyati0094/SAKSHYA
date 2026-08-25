@@ -83,7 +83,7 @@ executed and verified, never merely written.
 | 4 | Statistical simulation lab | ✅ Verified |
 | 5 | Gap detection & explainable recommender | ✅ Verified |
 | 6 | Dashboards, learning catalogue, iGOT boundary | ✅ Verified |
-| 7 | End-to-end demo wiring | Not started |
+| 7 | End-to-end demo wiring | ✅ Verified |
 | 8 | Testing & polish | Not started |
 
 ## How competency is determined

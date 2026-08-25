@@ -43,6 +43,7 @@ class ResourceOut(BaseModel):
     provider: str
     prerequisites: list[str]
     url: str | None
+    is_interactive: bool
     is_prototype_data: bool
 
 
@@ -95,6 +96,7 @@ def _resource_out(resource) -> ResourceOut:
         provider=resource.provider,
         prerequisites=list(resource.prerequisites),
         url=resource.url,
+        is_interactive=resource.is_interactive,
         is_prototype_data=resource.is_prototype_data,
     )
 

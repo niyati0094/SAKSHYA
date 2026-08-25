@@ -313,6 +313,7 @@ export interface LearningResourceOut {
   provider: string;
   prerequisites: string[];
   url: string | null;
+  is_interactive: boolean;
   is_prototype_data: boolean;
 }
 

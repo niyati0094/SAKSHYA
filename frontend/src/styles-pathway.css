@@ -188,3 +188,43 @@
   border-radius: 999px;
   background: var(--accent);
 }
+
+/* --- dashboard top-priority card --- */
+
+.priority-card {
+  border-left: 4px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.priority-card.sev-urgent {
+  border-left-color: var(--danger);
+}
+.priority-card.sev-significant {
+  border-left-color: var(--warn);
+}
+
+.priority-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.priority-card h2 {
+  font-size: 1.15rem;
+}
+
+.priority-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+
+.priority-actions .btn {
+  text-decoration: none;
+  display: inline-block;
+}

@@ -59,6 +59,7 @@ RESOURCES: list[LearningResource] = [
         3,
         6,
         PROVIDER,
+        is_interactive=True,
     ),
     # --- Non-response ---
     LearningResource(
@@ -93,6 +94,7 @@ RESOURCES: list[LearningResource] = [
         3,
         6,
         PROVIDER,
+        is_interactive=True,
     ),
     # --- Administrative data ---
     LearningResource(
@@ -116,6 +118,7 @@ RESOURCES: list[LearningResource] = [
         2,
         5,
         PROVIDER,
+        is_interactive=True,
     ),
     # --- Data quality ---
     LearningResource(

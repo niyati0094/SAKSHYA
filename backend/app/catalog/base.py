@@ -42,6 +42,11 @@ class LearningResource:
     #: Competency codes that should be established before starting this.
     prerequisites: tuple[str, ...] = ()
     url: str | None = None
+    #: True when the learner can actually complete this inside SAKSHYA today
+    #: (currently the simulations). Catalogue entries that merely describe
+    #: external material are False, so the recommender never sends a learner
+    #: to something they cannot act on.
+    is_interactive: bool = False
     is_prototype_data: bool = True
 
 

@@ -28,7 +28,7 @@ function StageChain({ active }: { active: string }) {
 }
 
 function RecommendationCard({ item }: { item: Recommendation }) {
-  const isSimulation = item.resource.external_id.startsWith('SIM-');
+  const isSimulation = item.resource.is_interactive;
 
   return (
     <article className={`card rec-card sev-${item.severity_band}`}>

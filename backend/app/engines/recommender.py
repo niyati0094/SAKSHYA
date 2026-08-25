@@ -163,13 +163,30 @@ def _pick_resource(
         ResourceKind.LEARN: [ResourceKind.LEARN, ResourceKind.PRACTICE, ResourceKind.PROVE],
     }
 
+    def best_of(items: list[LearningResource]) -> LearningResource:
+        # Closest pitch to the required level; ties broken by id so the choice
+        # is reproducible.
+        return min(
+            items,
+            key=lambda item: (abs(item.target_level - target_level), item.external_id),
+        )
+
+    # A resource the learner can actually complete beats one they can only read
+    # about. Without this, a learner whose next step is "practise" is pointed at
+    # a catalogue entry that leads nowhere, while a runnable simulation for the
+    # same competency sits one stage away.
+    first_non_interactive: LearningResource | None = None
+
     for candidate_stage in fallbacks.get(stage, [stage]):
         matching = [item for item in resources if item.kind == candidate_stage]
-        if matching:
-            # Closest pitch to the required level; ties broken by id so the
-            # choice is reproducible.
-            return min(
-                matching,
-                key=lambda item: (abs(item.target_level - target_level), item.external_id),
-            )
-    return None
+        if not matching:
+            continue
+
+        interactive = [item for item in matching if item.is_interactive]
+        if interactive:
+            return best_of(interactive)
+
+        if first_non_interactive is None:
+            first_non_interactive = best_of(matching)
+
+    return first_non_interactive

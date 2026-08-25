@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ApiError, apiFetch } from '../api/client';
+import { ApiError, apiFetch, getToken } from '../api/client';
 import { evidenceTypeLabel, formatDate } from '../components/competency';
 import type { EvidenceRecord } from '../types';
 
@@ -18,6 +18,32 @@ export function EvidenceLedgerPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>('all');
+  const [exporting, setExporting] = useState(false);
+
+  /**
+   * Fetch-then-blob rather than a plain link: the API is bearer-authenticated,
+   * and an <a href> would not carry the token.
+   */
+  async function exportCsv() {
+    setExporting(true);
+    try {
+      const response = await fetch('/api/v1/me/evidence/export', {
+        headers: { Authorization: `Bearer ${getToken() ?? ''}` },
+      });
+      if (!response.ok) throw new Error('Export failed');
+
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'sakshya-evidence.csv';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError('Could not export your evidence ledger.');
+    } finally {
+      setExporting(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -80,6 +106,14 @@ export function EvidenceLedgerPage() {
             unreviewed evidence stays visible as part of the audit trail.
           </p>
         </div>
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={() => void exportCsv()}
+          disabled={exporting || evidence.length === 0}
+        >
+          {exporting ? 'Exporting…' : 'Export CSV'}
+        </button>
       </header>
 
       <div className="filter-row" role="group" aria-label="Filter evidence by review status">

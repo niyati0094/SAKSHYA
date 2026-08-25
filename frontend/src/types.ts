@@ -337,3 +337,29 @@ export interface Pathway {
   calculated_at: string;
   method_note: string;
 }
+
+// ---------------------------------------------------------------------------
+// Admin analytics (Milestone 6)
+// ---------------------------------------------------------------------------
+
+export interface TrainingNeed {
+  competency_code: string;
+  competency_name: string;
+  criticality: string;
+  target_level: number;
+  learners_with_gap: number;
+  learners_unproven: number;
+  average_severity: number;
+  share_of_learners: number;
+}
+
+export interface OrganisationOverview {
+  learner_count: number;
+  learners_with_profile: number;
+  total_gaps: number;
+  urgent_gaps: number;
+  role_distribution: { role_name: string; learner_count: number }[];
+  training_needs: TrainingNeed[];
+  calculated_at: string;
+  notice: string;
+}

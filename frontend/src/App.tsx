@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminDashboard } from './pages/AdminDashboard';
 import { CompetencyDetailPage } from './pages/CompetencyDetailPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage';
@@ -127,7 +128,7 @@ export function App() {
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AppShell>
-              <DashboardPage role="admin" />
+              <AdminDashboard />
             </AppShell>
           </ProtectedRoute>
         }

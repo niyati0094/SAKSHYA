@@ -1,5 +1,8 @@
 const TOKEN_KEY = 'sakshya.token';
 
+/** Fired when the API rejects our token, so the session can be torn down. */
+export const UNAUTHORIZED_EVENT = 'sakshya:unauthorized';
+
 export class ApiError extends Error {
   status: number;
 
@@ -37,6 +40,15 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   } catch {
     // Network-level failure: the backend is not reachable at all.
     throw new ApiError(0, 'Cannot reach the SAKSHYA backend. Is the API server running?');
+  }
+
+  // A rejected token means the session is over. Clear it and let the app fall
+  // back to the login screen rather than leaving the user on a page that can
+  // only render an error. The login endpoint is exempt: a 401 there is a wrong
+  // password, not an expired session.
+  if (response.status === 401 && path !== '/auth/login') {
+    clearToken();
+    window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
   }
 
   if (!response.ok) {

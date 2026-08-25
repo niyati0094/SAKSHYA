@@ -116,7 +116,7 @@ def test_retrieval_ranks_the_relevant_passage_first(chunks):
     vectors = provider.embed([chunk.content for chunk in chunks])
     query = provider.embed(["What is hot-deck imputation?"])[0]
 
-    scores = [sum(a * b for a, b in zip(query, vector)) for vector in vectors]
+    scores = [sum(a * b for a, b in zip(query, vector, strict=True)) for vector in vectors]
     best = chunks[scores.index(max(scores))]
 
     assert "imputation" in best.content.lower()

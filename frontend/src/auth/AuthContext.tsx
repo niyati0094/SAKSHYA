@@ -1,6 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { ApiError, apiFetch, clearToken, getToken, setToken } from '../api/client';
+import {
+  ApiError,
+  UNAUTHORIZED_EVENT,
+  apiFetch,
+  clearToken,
+  getToken,
+  setToken,
+} from '../api/client';
 import type { LoginResponse, User } from '../types';
 
 interface AuthState {
@@ -41,6 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  // If any request is rejected as unauthorised, drop the session so the route
+  // guards send the user back to the login screen instead of stranding them.
+  useEffect(() => {
+    function handleUnauthorized() {
+      setUser(null);
+    }
+
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {

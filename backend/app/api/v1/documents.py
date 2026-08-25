@@ -15,6 +15,9 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 require_content_manager = require_roles(UserRole.SME, UserRole.ADMIN)
 
+#: Upload read size. Bounds peak memory to roughly the configured limit.
+_READ_CHUNK_BYTES = 64 * 1024
+
 
 @router.post("", response_model=DocumentOut, status_code=status.HTTP_201_CREATED)
 async def upload_document(
@@ -30,18 +33,25 @@ async def upload_document(
     document is genuinely searchable rather than merely accepted.
     """
     settings = get_settings()
-    data = await file.read()
 
+    # Read in chunks and stop at the limit. Reading the whole upload first and
+    # checking its size afterwards would let an oversized file exhaust memory
+    # before the check ever ran - the limit has to be enforced while reading.
+    buffer = bytearray()
+    while chunk := await file.read(_READ_CHUNK_BYTES):
+        buffer.extend(chunk)
+        if len(buffer) > settings.max_upload_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail=(
+                    f"File exceeds the {settings.max_upload_bytes // (1024 * 1024)} MB limit."
+                ),
+            )
+
+    data = bytes(buffer)
     if not data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="The uploaded file is empty."
-        )
-    if len(data) > settings.max_upload_bytes:
-        raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=(
-                f"File exceeds the {settings.max_upload_bytes // (1024 * 1024)} MB limit."
-            ),
         )
 
     try:

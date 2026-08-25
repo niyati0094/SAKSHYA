@@ -128,18 +128,27 @@ export function DashboardPage({ role }: { role: Role }) {
         </section>
 
         <section className="card card-muted">
-          <h2>Arriving in later milestones</h2>
-          <p className="muted small">
-            Listed honestly rather than shown as empty widgets or placeholder numbers.
-          </p>
-          <ul className="pending-list">
-            {data.pending_modules.map((module) => (
-              <li key={module}>
-                <span className="pending-dot" aria-hidden="true" />
-                {humanise(module, MODULE_LABELS)}
-              </li>
-            ))}
-          </ul>
+          <h2>Module status</h2>
+          {data.pending_modules.length === 0 ? (
+            <p className="muted small">
+              All modules for this role are built and wired to live data. Nothing on this
+              dashboard is a placeholder.
+            </p>
+          ) : (
+            <>
+              <p className="muted small">
+                Listed honestly rather than shown as empty widgets or placeholder numbers.
+              </p>
+              <ul className="pending-list">
+                {data.pending_modules.map((module) => (
+                  <li key={module}>
+                    <span className="pending-dot" aria-hidden="true" />
+                    {humanise(module, MODULE_LABELS)}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </section>
       </div>
 

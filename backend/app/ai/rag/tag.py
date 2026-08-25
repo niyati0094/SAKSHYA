@@ -34,7 +34,7 @@ class TagSuggestion:
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     # Provider vectors are already L2-normalised, so the dot product is cosine.
     return max(-1.0, min(1.0, dot))
 
@@ -58,7 +58,7 @@ def suggest_competency(
 
     scored = [
         (competency_id, _cosine(query, candidate))
-        for (competency_id, _), candidate in zip(competencies, candidates)
+        for (competency_id, _), candidate in zip(competencies, candidates, strict=True)
     ]
     scored.sort(key=lambda pair: pair[1], reverse=True)
     best_id, best_score = scored[0]

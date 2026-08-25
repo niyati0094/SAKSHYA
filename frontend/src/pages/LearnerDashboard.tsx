@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client';
 import { CriticalityBadge, MasteryBar, Meter, StatusBadge } from '../components/competency';
-import type { CompetencyProfile, CompetencyProfileEntry } from '../types';
+import type {
+  CompetencyProfile,
+  CompetencyProfileEntry,
+  Pathway,
+  Recommendation,
+} from '../types';
 
 function CompetencyCard({ entry }: { entry: CompetencyProfileEntry }) {
   const { competency, result, target_level, target_level_label, criticality } = entry;
@@ -53,8 +58,53 @@ function CompetencyCard({ entry }: { entry: CompetencyProfileEntry }) {
   );
 }
 
+/**
+ * The demo spine in one card: the most severe gap, why it is the most severe,
+ * and the single next action. Everything here comes from the deterministic
+ * pathway endpoint.
+ */
+function TopPriority({ recommendation }: { recommendation: Recommendation }) {
+  const isSimulation = recommendation.resource.is_interactive;
+
+  return (
+    <section className={`card priority-card sev-${recommendation.severity_band}`}>
+      <div className="priority-head">
+        <span className={`sev-badge sev-${recommendation.severity_band}`}>
+          {recommendation.severity_band} priority
+        </span>
+        <span className="muted small">Highest-severity gap for your role</span>
+      </div>
+
+      <h2>{recommendation.competency_name}</h2>
+
+      <ul className="why-bullets">
+        {recommendation.reasons.slice(0, 3).map((reason) => (
+          <li key={reason}>{reason}</li>
+        ))}
+      </ul>
+
+      <div className="priority-actions">
+        {isSimulation ? (
+          <Link
+            className="btn btn-primary"
+            to={`/learner/simulations/${recommendation.resource.external_id}`}
+          >
+            {recommendation.resource.title}
+          </Link>
+        ) : (
+          <span className="muted small">Next step: {recommendation.resource.title}</span>
+        )}
+        <Link className="btn btn-ghost" to="/learner/pathway">
+          See full pathway
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export function LearnerDashboard() {
   const [profile, setProfile] = useState<CompetencyProfile | null>(null);
+  const [priority, setPriority] = useState<Recommendation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,8 +113,14 @@ export function LearnerDashboard() {
 
     async function load() {
       try {
-        const data = await apiFetch<CompetencyProfile>('/me/competency-profile');
-        if (!cancelled) setProfile(data);
+        const [data, pathway] = await Promise.all([
+          apiFetch<CompetencyProfile>('/me/competency-profile'),
+          // The pathway is advisory here: if it fails, the profile still renders.
+          apiFetch<Pathway>('/me/pathway?limit=1').catch(() => null),
+        ]);
+        if (cancelled) return;
+        setProfile(data);
+        setPriority(pathway?.recommendations[0] ?? null);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof ApiError ? err.message : 'Unable to load your profile.');
@@ -127,6 +183,8 @@ export function LearnerDashboard() {
           </p>
         </div>
       </header>
+
+      {priority && <TopPriority recommendation={priority} />}
 
       <section className="stat-row">
         <div className="stat">

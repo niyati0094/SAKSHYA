@@ -281,3 +281,86 @@ export interface SimulationAttemptSummary {
   completed_at: string;
   evidence_id: number | null;
 }
+
+// ---------------------------------------------------------------------------
+// Gaps and pathway (Milestone 5)
+// ---------------------------------------------------------------------------
+
+export interface Gap {
+  competency_id: number;
+  competency_code: string;
+  competency_name: string;
+  current_level: number;
+  target_level: number;
+  level_shortfall: number;
+  status: string;
+  confidence: number;
+  criticality: string;
+  severity: number;
+  severity_band: 'urgent' | 'significant' | 'moderate' | 'minor';
+  evidence_limited: boolean;
+  reasons: string[];
+}
+
+export interface LearningResourceOut {
+  external_id: string;
+  title: string;
+  description: string;
+  kind: 'learn' | 'practice' | 'prove';
+  competency_code: string;
+  target_level: number;
+  estimated_minutes: number;
+  provider: string;
+  prerequisites: string[];
+  url: string | null;
+  is_interactive: boolean;
+  is_prototype_data: boolean;
+}
+
+export interface Recommendation {
+  rank: number;
+  competency_code: string;
+  competency_name: string;
+  stage: 'learn' | 'practice' | 'prove';
+  resource: LearningResourceOut;
+  severity: number;
+  severity_band: 'urgent' | 'significant' | 'moderate' | 'minor';
+  reasons: string[];
+  unmet_prerequisites: string[];
+  blocked: boolean;
+}
+
+export interface Pathway {
+  role: StatisticalRole | null;
+  gaps: Gap[];
+  recommendations: Recommendation[];
+  catalog: { adapter: string; is_live_integration: boolean; notice: string };
+  calculated_at: string;
+  method_note: string;
+}
+
+// ---------------------------------------------------------------------------
+// Admin analytics (Milestone 6)
+// ---------------------------------------------------------------------------
+
+export interface TrainingNeed {
+  competency_code: string;
+  competency_name: string;
+  criticality: string;
+  target_level: number;
+  learners_with_gap: number;
+  learners_unproven: number;
+  average_severity: number;
+  share_of_learners: number;
+}
+
+export interface OrganisationOverview {
+  learner_count: number;
+  learners_with_profile: number;
+  total_gaps: number;
+  urgent_gaps: number;
+  role_distribution: { role_name: string; learner_count: number }[];
+  training_needs: TrainingNeed[];
+  calculated_at: string;
+  notice: string;
+}

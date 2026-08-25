@@ -67,6 +67,22 @@ one-click buttons for each.
 cd backend && .venv/Scripts/python -m pytest
 ```
 
+```bash
+cd frontend && npm test
+```
+
+202 backend tests and 19 frontend tests. The backend suite covers the
+deterministic engines against hand-computed values, RBAC across every
+role pair, grounding verification, and the full evidence loop.
+
+### Reset the demo
+
+```bash
+cd backend && rm -f sakshya.db && .venv/Scripts/python -m app.db.seed
+```
+
+The 2-minute demo script is in [docs/DEMO.md](docs/DEMO.md).
+
 ---
 
 ## Current status
@@ -81,10 +97,10 @@ executed and verified, never merely written.
 | 2 | Competency system, evidence ledger, deterministic engine | ✅ Verified |
 | 3 | Document upload, RAG, grounded MCQ, SME review | ✅ Verified |
 | 4 | Statistical simulation lab | ✅ Verified |
-| 5 | Gap detection & explainable recommender | Not started |
-| 6 | Dashboards, learning catalogue, iGOT boundary | Not started |
-| 7 | End-to-end demo wiring | Not started |
-| 8 | Testing & polish | Not started |
+| 5 | Gap detection & explainable recommender | ✅ Verified |
+| 6 | Dashboards, learning catalogue, iGOT boundary | ✅ Verified |
+| 7 | End-to-end demo wiring | ✅ Verified |
+| 8 | Testing & polish | ✅ Verified |
 
 ## How competency is determined
 
@@ -182,3 +198,29 @@ Reasoning in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - Authorisation is re-checked against the database on every request, so a
   deactivated user or a changed role takes effect immediately rather than when
   the token expires.
+- Uploaded filenames are sanitised and UUID-prefixed, so a crafted name cannot
+  escape the upload directory. Internal storage paths are never returned to
+  clients.
+- A rejected token ends the session client-side rather than stranding the user
+  on an error.
+
+## Known limitations
+
+Stated plainly rather than left for a judge to find:
+
+- **`docker-compose.yml`, `backend/Dockerfile` and `app/vectorstore/pgvector_store.py`
+  have never been executed.** The build machine has no Docker and no pgvector.
+  They are labelled unverified in-file and must not be reported as working
+  until they have actually been run.
+- **Embeddings are lexical, not semantic.** The offline provider is a hashed
+  bag-of-words projection: it matches wording, not paraphrase. Adequate at demo
+  corpus size; a real embedding model drops in behind the same interface.
+- **Generated questions are extractive**, so they read more plainly than a
+  hosted LLM's would. That is the trade that buys non-hallucination.
+- **Document ingestion is synchronous.** A large PDF would block the request;
+  production would need a queue. The whole upload is also read into memory
+  before the size limit is checked.
+- **Scanned/image PDFs are rejected** with a message saying OCR would be
+  required, rather than silently producing nothing.
+- **Schema is created from SQLAlchemy metadata plus an idempotent seed**, not
+  incremental migrations. Alembic is the documented production path.

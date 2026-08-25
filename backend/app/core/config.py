@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     upload_dir: str = "./storage/uploads"
     max_upload_bytes: int = 10 * 1024 * 1024
 
+    # Seed prototype demo data on startup when the database is empty. Deployment
+    # hosts often have ephemeral disks, so without this a restart would leave
+    # the demo with nothing to show. It never overwrites existing data.
+    auto_seed: bool = True
+
     @property
     def is_development(self) -> bool:
         return self.environment.lower() in {"development", "dev", "local", "test"}

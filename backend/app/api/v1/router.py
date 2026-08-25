@@ -3,11 +3,13 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    admin,
     auth,
     competency,
     dashboard,
     documents,
     health,
+    pathway,
     questions,
     simulations,
 )
@@ -20,3 +22,5 @@ api_router.include_router(competency.router)
 api_router.include_router(documents.router)
 api_router.include_router(questions.router)
 api_router.include_router(simulations.router)
+api_router.include_router(pathway.router)
+api_router.include_router(admin.router)

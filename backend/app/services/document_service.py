@@ -82,7 +82,7 @@ def ingest_document(
     embedder = get_embedding_provider()
     vectors = embedder.embed([chunk.content for chunk in chunks])
 
-    for chunk, vector in zip(chunks, vectors):
+    for chunk, vector in zip(chunks, vectors, strict=True):
         db.add(
             DocumentChunk(
                 document_id=document.id,

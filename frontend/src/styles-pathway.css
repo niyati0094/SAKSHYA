@@ -1,0 +1,230 @@
+/* Gap and pathway styling (Milestone 5). */
+
+.section-heading {
+  font-size: 1.05rem;
+  margin-top: 0.5rem;
+}
+
+.rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rec-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border-left: 3px solid var(--line);
+}
+
+.rec-card.sev-urgent {
+  border-left-color: var(--danger);
+}
+.rec-card.sev-significant {
+  border-left-color: var(--warn);
+}
+.rec-card.sev-moderate {
+  border-left-color: var(--accent);
+}
+.rec-card.sev-minor {
+  border-left-color: var(--muted);
+}
+
+.rec-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.rec-rank {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  font-size: 0.88rem;
+}
+
+.rec-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.rec-title h3 {
+  font-size: 1rem;
+}
+
+.sev-badge {
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.sev-badge.sev-urgent {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: #fecaca;
+}
+.sev-badge.sev-significant {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: #fde68a;
+}
+.sev-badge.sev-moderate {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: #c7d2fe;
+}
+.sev-badge.sev-minor {
+  background: var(--canvas);
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+/* --- Learn -> Practice -> Prove --- */
+
+.stage-chain {
+  list-style: none;
+  display: flex;
+  gap: 0.35rem;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.stage-chain li {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.stage-chain li + li::before {
+  content: '→';
+  margin-right: 0.45rem;
+  opacity: 0.5;
+}
+
+.stage-chain .stage-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --- why box --- */
+
+.why-box {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+}
+
+.why-bullets {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.resource-note {
+  font-style: italic;
+}
+
+.data-table th a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.data-table th a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .rec-head {
+    flex-wrap: wrap;
+  }
+}
+
+.stat-danger .stat-value {
+  color: var(--danger);
+}
+
+.bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.bar-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* --- dashboard top-priority card --- */
+
+.priority-card {
+  border-left: 4px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.priority-card.sev-urgent {
+  border-left-color: var(--danger);
+}
+.priority-card.sev-significant {
+  border-left-color: var(--warn);
+}
+
+.priority-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.priority-card h2 {
+  font-size: 1.15rem;
+}
+
+.priority-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+
+.priority-actions .btn {
+  text-decoration: none;
+  display: inline-block;
+}

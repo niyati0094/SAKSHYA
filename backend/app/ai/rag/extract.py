@@ -76,7 +76,7 @@ def extract_pdf(path: str) -> list[ExtractedPage]:
 
 
 def extract_text_file(path: str) -> list[ExtractedPage]:
-    with open(path, "r", encoding="utf-8", errors="replace") as handle:
+    with open(path, encoding="utf-8", errors="replace") as handle:
         content = handle.read()
 
     cleaned = _clean(content)
